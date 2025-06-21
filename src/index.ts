@@ -5,7 +5,7 @@ import swagger from "@elysiajs/swagger";
 import { db } from "../db/db";
 import { courses } from "../db/schemas/course.schema";
 import { course } from "../modules/course";
-import { clerkPlugin } from "elysia-clerk";
+import { enroll } from "../modules/enroll";
 
 const PORT = process.env.PORT!;
 
@@ -25,6 +25,7 @@ const app = new Elysia()
     };
   })
   .use(course)
+  .use(enroll)
   .listen(PORT);
 
 logger.info(

@@ -13,12 +13,7 @@ import {
 import { questions } from "../db/schemas/question.schema";
 import { questionProgress } from "../db/schemas/question-progress.schema";
 import { users } from "../db/schemas/user.schema";
-import {
-  PaymentStatus,
-  Roles,
-  CourseStatus,
-  CourseLevel,
-} from "../utils/enums";
+import { PaymentStatus, Roles, CourseLevel } from "../utils/enums";
 
 export const course = new Elysia({ prefix: "/courses" })
   .use(clerkPlugin())
