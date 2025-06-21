@@ -7,6 +7,7 @@ import { courses } from "../db/schemas/course.schema";
 import { course } from "../modules/course";
 import { enroll } from "../modules/enroll";
 import { lesson } from "../modules/lesson";
+import { progress } from "../modules/progress";
 
 const PORT = process.env.PORT!;
 
@@ -28,6 +29,7 @@ const app = new Elysia()
   .use(course)
   .use(enroll)
   .use(lesson)
+  .use(progress)
   .listen(PORT);
 
 logger.info(
