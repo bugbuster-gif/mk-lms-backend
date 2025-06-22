@@ -17,8 +17,8 @@ export const ticketResponse = new Elysia({ prefix: "/tickets" })
   .use(clerkPlugin())
   // Get all responses for a ticket
   .get(
-    "/:ticketId/responses",
-    async ({ params: { ticketId }, set, auth: getAuth }) => {
+    "/:id/responses",
+    async ({ params: { id }, set, auth: getAuth }) => {
       try {
         const auth = getAuth();
         if (!auth?.userId) {
@@ -29,7 +29,7 @@ export const ticketResponse = new Elysia({ prefix: "/tickets" })
         const responses = await db
           .select()
           .from(ticketResponses)
-          .where(eq(ticketResponses.ticketId, ticketId))
+          .where(eq(ticketResponses.ticketId, id))
           .orderBy(ticketResponses.createdAt);
 
         return { data: responses };
@@ -41,14 +41,14 @@ export const ticketResponse = new Elysia({ prefix: "/tickets" })
     },
     {
       params: t.Object({
-        ticketId: t.String(),
+        id: t.String(),
       }),
     }
   )
   // Create a new response
   .post(
-    "/:ticketId/responses",
-    async ({ params: { ticketId }, body, set, auth: getAuth }) => {
+    "/:id/responses",
+    async ({ params: { id }, body, set, auth: getAuth }) => {
       try {
         const auth = getAuth();
         if (!auth?.userId) {
@@ -64,7 +64,7 @@ export const ticketResponse = new Elysia({ prefix: "/tickets" })
             userId: tickets.userId,
           })
           .from(tickets)
-          .where(eq(tickets.id, ticketId));
+          .where(eq(tickets.id, id));
 
         if (!ticket) {
           set.status = 404;
@@ -93,7 +93,7 @@ export const ticketResponse = new Elysia({ prefix: "/tickets" })
           .insert(ticketResponses)
           .values({
             ...body,
-            ticketId,
+            ticketId: id,
             userId: auth.userId,
           })
           .returning();
@@ -150,7 +150,7 @@ export const ticketResponse = new Elysia({ prefix: "/tickets" })
     },
     {
       params: t.Object({
-        ticketId: t.String(),
+        id: t.String(),
       }),
       body: t.Object({
         content: t.String({ minLength: 1 }),
