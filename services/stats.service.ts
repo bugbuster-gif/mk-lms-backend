@@ -1,6 +1,6 @@
 import { userStats } from "../db/schemas/user-stats.schema";
 import { activityLog, ActivityType } from "../db/schemas/activity-log.schema";
-import { desc, eq, sql } from "drizzle-orm";
+import { desc, eq, sql, and, or, inArray } from "drizzle-orm";
 import { db } from "../db/db";
 import { createId } from "@paralleldrive/cuid2";
 import { users } from "../db/schemas/user.schema";
@@ -125,8 +125,200 @@ export class StatsService {
 
   /**
    * Get global leaderboard
+   * @param limit Maximum number of entries to return
+   * @param offset Pagination offset
+   * @returns Leaderboard entries with rank information
    */
   async getLeaderboard(
+    limit = 10,
+    offset = 0
+  ): Promise<LeaderboardEntry[]> {
+    return this.getLeaderboardInternal({
+      limit,
+      offset,
+      timeframe: "all"
+    });
+  }
+
+  /**
+   * Get weekly leaderboard
+   * @param limit Maximum number of entries to return
+   * @param offset Pagination offset
+   * @returns Weekly leaderboard entries with rank information
+   */
+  async getWeeklyLeaderboard(
+    limit = 10,
+    offset = 0
+  ): Promise<LeaderboardEntry[]> {
+    return this.getLeaderboardInternal({
+      limit,
+      offset,
+      timeframe: "weekly"
+    });
+  }
+
+  /**
+   * Get monthly leaderboard
+   * @param limit Maximum number of entries to return
+   * @param offset Pagination offset
+   * @returns Monthly leaderboard entries with rank information
+   */
+  async getMonthlyLeaderboard(
+    limit = 10,
+    offset = 0
+  ): Promise<LeaderboardEntry[]> {
+    return this.getLeaderboardInternal({
+      limit,
+      offset,
+      timeframe: "monthly"
+    });
+  }
+
+  /**
+   * Get course-specific leaderboard
+   * @param courseId Course ID to get leaderboard for
+   * @param limit Maximum number of entries to return
+   * @param offset Pagination offset
+   * @returns Course-specific leaderboard entries with rank information
+   */
+  async getCourseLeaderboard(
+    courseId: string,
+    limit = 10,
+    offset = 0
+  ): Promise<LeaderboardEntry[]> {
+    // Get all activities related to this course
+    const courseActivities = await db
+      .select({
+        userId: activityLog.userId,
+        totalPoints: sql<number>`SUM(${activityLog.points})`,
+      })
+      .from(activityLog)
+      .where(
+        and(
+          eq(activityLog.entityId, courseId),
+          or(
+            eq(activityLog.type, ActivityType.LESSON_PROGRESS),
+            eq(activityLog.type, ActivityType.LESSON_COMPLETED),
+            eq(activityLog.type, ActivityType.COURSE_COMPLETED)
+          )
+        )
+      )
+      .groupBy(activityLog.userId)
+      .orderBy(desc(sql`SUM(${activityLog.points})`))
+      .limit(limit)
+      .offset(offset);
+
+    // If no activities found for this course, return empty array
+    if (courseActivities.length === 0) {
+      return [];
+    }
+
+    // Get user details for the leaderboard
+    const userIds = courseActivities.map(activity => activity.userId);
+    
+    const userDetails = await db
+      .select({
+        id: users.id,
+        name: users.name,
+        avatarUrl: users.avatarUrl,
+      })
+      .from(users)
+      .where(inArray(users.id, userIds));
+
+    // Create a map of user details for quick lookup
+    const userMap = new Map(
+      userDetails.map(user => [user.id, { name: user.name, avatarUrl: user.avatarUrl }])
+    );
+
+    // Combine course activities with user details to create leaderboard entries
+    return courseActivities.map((activity, index) => {
+      const user = userMap.get(activity.userId);
+      return {
+        userId: activity.userId,
+        name: user?.name || "Unknown User",
+        avatarUrl: user?.avatarUrl || undefined,
+        rank: offset + index + 1,
+        points: Number(activity.totalPoints),
+      };
+    });
+  }
+
+  /**
+   * Get user statistics
+   * @param userId User ID to get statistics for
+   * @returns User statistics including points, ranks, and completion counts
+   */
+  async getUserStats(userId: string): Promise<{
+    totalPoints: number;
+    weeklyPoints: number;
+    monthlyPoints: number;
+    rank: number;
+    lessonsCompleted: number;
+    coursesCompleted: number;
+    totalTimeSpent: number;
+    updatedAt: Date;
+  } | null> {
+    const stats = await db
+      .select({
+        totalPoints: userStats.totalPoints,
+        weeklyPoints: userStats.weeklyPoints,
+        monthlyPoints: userStats.monthlyPoints,
+        lessonsCompleted: userStats.lessonsCompleted,
+        coursesCompleted: userStats.coursesCompleted,
+        totalTimeSpent: userStats.totalTimeSpent,
+        updatedAt: userStats.updatedAt,
+      })
+      .from(userStats)
+      .where(eq(userStats.userId, userId))
+      .limit(1);
+
+    if (stats.length === 0) {
+      return null;
+    }
+
+    // Get user's rank
+    const rank = await this.getUserRank(userId);
+
+    return {
+      ...stats[0],
+      rank,
+      totalPoints: Number(stats[0].totalPoints),
+      weeklyPoints: Number(stats[0].weeklyPoints),
+      monthlyPoints: Number(stats[0].monthlyPoints),
+      lessonsCompleted: Number(stats[0].lessonsCompleted),
+      coursesCompleted: Number(stats[0].coursesCompleted),
+      totalTimeSpent: Number(stats[0].totalTimeSpent),
+      updatedAt: new Date(stats[0].updatedAt),
+    };
+  }
+
+  /**
+   * Get a user's rank based on total points
+   * @param userId User ID to get rank for
+   * @returns User's current rank
+   */
+  private async getUserRank(userId: string): Promise<number> {
+    // Count how many users have more points than this user
+    const result = await db
+      .select({
+        rank: sql<number>`COUNT(*) + 1`,
+      })
+      .from(userStats)
+      .where(
+        sql`${userStats.totalPoints} > (
+          SELECT ${userStats.totalPoints} 
+          FROM ${userStats} 
+          WHERE ${userStats.userId} = ${userId}
+        )`
+      );
+
+    return Number(result[0]?.rank || 1);
+  }
+
+  /**
+   * Internal method to get leaderboard with various filtering options
+   */
+  private async getLeaderboardInternal(
     options: LeaderboardOptions = {},
   ): Promise<LeaderboardEntry[]> {
     const { limit = 10, offset = 0, timeframe = "all", courseId } = options;
@@ -213,19 +405,6 @@ export class StatsService {
           .where(eq(userStats.id, rankedUsers[i].id));
       }
     });
-  }
-
-  /**
-   * Get a user's stats
-   */
-  async getUserStats(userId: string) {
-    const stats = await db
-      .select()
-      .from(userStats)
-      .where(eq(userStats.userId, userId))
-      .limit(1);
-
-    return stats[0] || null;
   }
 }
 
