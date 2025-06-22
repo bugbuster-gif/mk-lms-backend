@@ -1,5 +1,5 @@
 import { Elysia } from "elysia";
-import { logger } from "../utils/logger";
+import logger from "../utils/logger";
 import cors from "@elysiajs/cors";
 import swagger from "@elysiajs/swagger";
 import { db } from "../db/db";

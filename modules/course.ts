@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia";
 import { clerkPlugin } from "elysia-clerk";
 import { createId } from "@paralleldrive/cuid2";
-import { and, eq, sql, inArray } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import { db } from "../db/db";
 import { courses } from "../db/schemas/course.schema";
 import { enrollments } from "../db/schemas/enrollment.schema";
@@ -13,11 +13,10 @@ import {
 import { questions } from "../db/schemas/question.schema";
 import { questionProgress } from "../db/schemas/question-progress.schema";
 import { users } from "../db/schemas/user.schema";
-import { PaymentStatus, Roles, CourseLevel } from "../utils/enums";
+import { CourseLevel, PaymentStatus, Roles } from "../utils/enums";
 import { statsService } from "../services/stats.service";
-import { activityService } from "../services/activity.service";
 import { achievementService } from "../services/achievement.service";
-import { ActivityType, activityLog } from "../db/schemas/activity-log.schema";
+import { activityLog, ActivityType } from "../db/schemas/activity-log.schema";
 
 export const course = new Elysia({ prefix: "/courses" })
   .use(clerkPlugin())
@@ -457,8 +456,8 @@ export const course = new Elysia({ prefix: "/courses" })
             and(
               eq(enrollments.courseId, id),
               eq(enrollments.userId, auth.userId),
-              eq(enrollments.paymentStatus, PaymentStatus.PAID)
-            )
+              eq(enrollments.paymentStatus, PaymentStatus.PAID),
+            ),
           )
           .execute();
 
@@ -501,15 +500,15 @@ export const course = new Elysia({ prefix: "/courses" })
               eq(lessonProgress.status, LessonStatus.COMPLETED),
               inArray(
                 lessonProgress.lessonId,
-                courseLessons.map(lesson => lesson.id)
-              )
-            )
+                courseLessons.map((lesson) => lesson.id),
+              ),
+            ),
           )
           .execute();
 
         // Check if all lessons are completed
         const isCompleted = completedLessons.length === courseLessons.length;
-        
+
         // If the course is completed, award points and update stats
         if (isCompleted) {
           // Check if we've already awarded points for this course completion
@@ -520,8 +519,8 @@ export const course = new Elysia({ prefix: "/courses" })
               and(
                 eq(activityLog.userId, auth.userId),
                 eq(activityLog.type, ActivityType.COURSE_COMPLETED),
-                eq(activityLog.entityId, id)
-              )
+                eq(activityLog.entityId, id),
+              ),
             )
             .execute();
 
@@ -531,7 +530,7 @@ export const course = new Elysia({ prefix: "/courses" })
               // Calculate points based on course level, length, etc.
               // For now, using a simple formula based on course level and number of lessons
               let basePoints = 100;
-              
+
               // Adjust points based on course level
               switch (course.level) {
                 case CourseLevel.BEGINNER:
@@ -546,31 +545,31 @@ export const course = new Elysia({ prefix: "/courses" })
                 default:
                   basePoints = 100;
               }
-              
+
               // Add bonus points based on number of lessons
               const lessonBonus = Math.min(100, courseLessons.length * 10);
               const totalPoints = Math.min(500, basePoints + lessonBonus);
-              
+
               // Award points and log activity
               await statsService.addPoints(
                 auth.userId,
                 totalPoints,
                 ActivityType.COURSE_COMPLETED,
-                id
+                id,
               );
-              
+
               // Increment courses completed count
               await statsService.incrementCoursesCompleted(auth.userId);
-              
+
               // Check for achievements
               await achievementService.checkAndAwardAchievements(auth.userId);
-              
-              return { 
-                data: { 
-                  completed: true, 
+
+              return {
+                data: {
+                  completed: true,
                   pointsAwarded: totalPoints,
-                  message: `Congratulations! You've completed the course "${course.title}" and earned ${totalPoints} points!`
-                } 
+                  message: `Congratulations! You've completed the course "${course.title}" and earned ${totalPoints} points!`,
+                },
               };
             } catch (error) {
               console.error("Error updating gamification stats:", error);
@@ -579,30 +578,30 @@ export const course = new Elysia({ prefix: "/courses" })
             }
           } else {
             // Course was already completed before
-            return { 
-              data: { 
-                completed: true, 
+            return {
+              data: {
+                completed: true,
                 alreadyCompleted: true,
-                message: `You've already completed the course "${course.title}".`
-              } 
+                message: `You've already completed the course "${course.title}".`,
+              },
             };
           }
         } else {
           // Course is not completed yet
           const completionPercentage = Math.round(
-            (completedLessons.length / courseLessons.length) * 100
+            (completedLessons.length / courseLessons.length) * 100,
           );
-          
-          return { 
-            data: { 
-              completed: false, 
+
+          return {
+            data: {
+              completed: false,
               progress: {
                 completedLessons: completedLessons.length,
                 totalLessons: courseLessons.length,
-                completionPercentage
+                completionPercentage,
               },
-              message: `You've completed ${completedLessons.length} out of ${courseLessons.length} lessons (${completionPercentage}%).`
-            } 
+              message: `You've completed ${completedLessons.length} out of ${courseLessons.length} lessons (${completionPercentage}%).`,
+            },
           };
         }
       } catch (error) {
