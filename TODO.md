@@ -68,10 +68,10 @@ This document outlines the implementation plan for adding gamification features 
 - [x] Modify existing progress tracking to update user stats
 
 ### 4. Background Jobs
-- [ ] Create weekly points reset job
-- [ ] Create monthly points reset job
-- [ ] Create daily streak check job
-- [ ] Create leaderboard calculation job
+- [x] Create weekly points reset job
+- [x] Create monthly points reset job
+- [x] Create daily streak check job
+- [x] Create leaderboard calculation job
 
 ## Testing
 - [ ] Unit Tests

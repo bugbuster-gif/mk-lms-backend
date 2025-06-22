@@ -1,5 +1,5 @@
 import { Elysia } from "elysia";
-import logger from "../utils/logger";
+import { logger } from "../utils/logger";
 import cors from "@elysiajs/cors";
 import swagger from "@elysiajs/swagger";
 import { db } from "../db/db";
@@ -14,6 +14,7 @@ import { ticketResponse } from "../modules/ticketResponse";
 import { uploads } from "../modules/uploads";
 import { user } from "../modules/user";
 import { gamification } from "../modules/gamification";
+import { cronJobs } from "../modules/cron";
 
 const PORT = process.env.PORT!;
 
@@ -42,6 +43,7 @@ const app = new Elysia()
   .use(uploads)
   .use(user)
   .use(gamification)
+  .use(cronJobs)
   .listen(PORT);
 
 logger.info(
