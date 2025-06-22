@@ -14,17 +14,23 @@ import { relations } from "drizzle-orm";
 // Define activity types as an enum
 export enum ActivityType {
   LESSON_PROGRESS = "lesson_progress",
+  LESSON_COMPLETED = "lesson_completed",
   COURSE_ENROLLED = "course_enrolled",
   COURSE_COMPLETED = "course_completed",
   LOGIN = "login",
+  EARN_ACHIEVEMENT = "earn_achievement",
+  MAINTAIN_STREAK = "maintain_streak",
 }
 
 // Create a PostgreSQL enum for activity types
 export const activityTypeEnum = pgEnum("activity_type", [
   ActivityType.LESSON_PROGRESS,
+  ActivityType.LESSON_COMPLETED,
   ActivityType.COURSE_ENROLLED,
   ActivityType.COURSE_COMPLETED,
   ActivityType.LOGIN,
+  ActivityType.EARN_ACHIEVEMENT,
+  ActivityType.MAINTAIN_STREAK,
 ]);
 
 export const activityLog = pgTable(
