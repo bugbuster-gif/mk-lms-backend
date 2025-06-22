@@ -1,10 +1,12 @@
 import { Elysia, t } from "elysia";
 import { clerkPlugin } from "elysia-clerk";
-
 import { statsService } from "../services/stats.service";
 import { streakService } from "../services/streak.service";
 import { achievementService } from "../services/achievement.service";
 import { activityService } from "../services/activity.service";
+import { activityLog, ActivityType } from "../db/schemas/activity-log.schema";
+import { db } from "../db/db";
+import { and, eq, sql } from "drizzle-orm";
 
 /**
  * Gamification module providing endpoints for leaderboards, achievements, streaks, and user stats
@@ -233,52 +235,171 @@ export const gamification = new Elysia({ prefix: "/gamification" })
   // User activity endpoints
   .group("/activity", (app) =>
     app
-      // Get current user's activity history
       .get(
-        "/",
-        async ({ auth: getAuth, query }) => {
+        "/history",
+        async ({ query, set, auth: getAuth }) => {
           const auth = getAuth();
 
           if (!auth?.userId) {
-            throw new Error("Unauthorized");
+            set.status = 401;
+            return { error: "Unauthorized" };
           }
 
-          const limit = query.limit ? parseInt(query.limit) : 10;
-          const offset = query.offset ? parseInt(query.offset) : 0;
-
-          return await activityService.getUserActivityHistory(
-            auth.userId,
-            limit,
-            offset,
-          );
+          try {
+            const { page = 1, limit = 10 } = query;
+            const history = await activityService.getUserActivityHistory(
+              auth.userId,
+              Number(page),
+              Number(limit)
+            );
+            return { data: history };
+          } catch (error) {
+            console.error("Error fetching activity history:", error);
+            set.status = 500;
+            return { error: "Failed to fetch activity history" };
+          }
         },
         {
           query: t.Object({
+            page: t.Optional(t.String()),
             limit: t.Optional(t.String()),
-            offset: t.Optional(t.String()),
           }),
           detail: {
-            summary: "Get current user's activity history",
             tags: ["Gamification"],
           },
         },
       )
-
-      // Get recent activities across all users
       .get(
         "/recent",
-        async ({ query }) => {
-          const limit = query.limit ? parseInt(query.limit) : 20;
-          return await activityService.getRecentActivities(limit);
+        async ({ query, set, auth: getAuth }) => {
+          const auth = getAuth();
+
+          if (!auth?.userId) {
+            set.status = 401;
+            return { error: "Unauthorized" };
+          }
+
+          try {
+            const { limit = 5 } = query;
+            const activities = await activityService.getRecentActivities(
+              Number(limit)
+            );
+            return { data: activities };
+          } catch (error) {
+            console.error("Error fetching recent activities:", error);
+            set.status = 500;
+            return { error: "Failed to fetch recent activities" };
+          }
         },
         {
           query: t.Object({
             limit: t.Optional(t.String()),
           }),
           detail: {
-            summary: "Get recent activities across all users",
             tags: ["Gamification"],
           },
         },
-      ),
+      )
+      .post(
+        "/record",
+        async ({ body, set, auth: getAuth }) => {
+          const auth = getAuth();
+
+          if (!auth?.userId) {
+            set.status = 401;
+            return { error: "Unauthorized" };
+          }
+
+          try {
+            const { type, entityId } = body;
+            
+            // Record the activity
+            const activity = await activityService.logActivity(
+              auth.userId,
+              type,
+              entityId
+            );
+
+            return { data: activity };
+          } catch (error) {
+            console.error("Error recording activity:", error);
+            set.status = 500;
+            return { error: "Failed to record activity" };
+          }
+        },
+        {
+          body: t.Object({
+            type: t.Enum(ActivityType),
+            entityId: t.Optional(t.String()),
+          }),
+        },
+      )
+      .post(
+        "/check-in",
+        async ({ set, auth: getAuth }) => {
+          const auth = getAuth();
+
+          if (!auth?.userId) {
+            set.status = 401;
+            return { error: "Unauthorized" };
+          }
+
+          try {
+            // Check if user already checked in today
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const existingCheckin = await db
+              .select()
+              .from(activityLog)
+              .where(
+                and(
+                  eq(activityLog.userId, auth.userId),
+                  eq(activityLog.type, ActivityType.LOGIN),
+                  sql`DATE(${activityLog.createdAt}) = DATE(NOW())`
+                )
+              )
+              .execute();
+
+            let isFirstLoginToday = existingCheckin.length === 0;
+            let streakData = null;
+
+            // If this is the first login today, update streak
+            if (isFirstLoginToday) {
+              // Log the login activity
+              await activityService.logActivity(
+                auth.userId,
+                ActivityType.LOGIN
+              );
+              
+              // Update streak and get updated streak data
+              streakData = await streakService.recordActivity(auth.userId);
+              
+              // Award points for maintaining streak
+              if (streakData.currentStreak > 1) {
+                await statsService.addPoints(
+                  auth.userId,
+                  5, // 5 points per day for maintaining streak
+                  ActivityType.MAINTAIN_STREAK
+                );
+              }
+              
+              // Check for achievements (like streak milestones)
+              await achievementService.checkAndAwardAchievements(auth.userId);
+            }
+
+            return { 
+              data: { 
+                checkedIn: true,
+                isFirstLoginToday,
+                streak: streakData
+              } 
+            };
+          } catch (error) {
+            console.error("Error during check-in:", error);
+            set.status = 500;
+            return { error: "Failed to process check-in" };
+          }
+        }
+      )
   );

@@ -11,6 +11,10 @@ import {
 import { questionProgress } from "../db/schemas/question-progress.schema";
 import { questions } from "../db/schemas/question.schema";
 import { lessons } from "../db/schemas/lesson.schema";
+import { statsService } from "../services/stats.service";
+import { activityService } from "../services/activity.service";
+import { achievementService } from "../services/achievement.service";
+import { ActivityType } from "../db/schemas/activity-log.schema";
 
 export const progress = new Elysia({ prefix: "/progress" })
   .use(clerkPlugin())
@@ -253,13 +257,29 @@ export const progress = new Elysia({ prefix: "/progress" })
         return { error: "Lesson not found" };
       }
 
+      // Get current progress to check if lesson was already completed
+      const [currentProgress] = await db
+        .select()
+        .from(lessonProgress)
+        .where(
+          and(
+            eq(lessonProgress.lessonId, lessonId),
+            eq(lessonProgress.userId, auth.userId)
+          )
+        )
+        .execute();
+      
+      const wasAlreadyCompleted = currentProgress?.status === LessonStatus.COMPLETED;
+
       let status = LessonStatus.IN_PROGRESS;
       let completedAt = null;
+      let isNewlyCompleted = false;
 
       // If lesson has no questions, mark as completed when content is finished
       if (!lesson.hasQuestions && contentProgress === 100) {
         status = LessonStatus.COMPLETED;
         completedAt = new Date();
+        isNewlyCompleted = !wasAlreadyCompleted;
       }
       // If lesson has questions, check question progress
       else if (lesson.hasQuestions && contentProgress === 100) {
@@ -293,6 +313,7 @@ export const progress = new Elysia({ prefix: "/progress" })
         ) {
           status = LessonStatus.COMPLETED;
           completedAt = new Date();
+          isNewlyCompleted = !wasAlreadyCompleted;
         }
       }
 
@@ -319,6 +340,59 @@ export const progress = new Elysia({ prefix: "/progress" })
           },
         })
         .returning();
+
+      // If the lesson was newly completed, award points and log activity
+      if (isNewlyCompleted) {
+        try {
+          // Calculate points based on lesson difficulty or length
+          // For now, using a simple formula: 10 points + 1 point per minute of lesson duration
+          const points = Math.min(50, Math.max(10, 10 + Math.floor(lesson.duration / 60)));
+          
+          // Award points and log activity
+          await statsService.addPoints(
+            auth.userId,
+            points,
+            ActivityType.LESSON_COMPLETED,
+            lessonId
+          );
+          
+          // Increment lessons completed count
+          await statsService.incrementLessonsCompleted(auth.userId);
+          
+          // Add time spent to user stats
+          if (timeSpent) {
+            await statsService.addTimeSpent(auth.userId, timeSpent);
+          }
+          
+          // Check for achievements
+          await achievementService.checkAndAwardAchievements(auth.userId);
+        } catch (error) {
+          console.error("Error updating gamification stats:", error);
+          // Don't fail the request if gamification updates fail
+        }
+      } else if (contentProgress > 0 && status === LessonStatus.IN_PROGRESS) {
+        // Log progress activity (with fewer points) for partial completion
+        try {
+          // Only log progress activity if progress increased significantly (>20%)
+          if (!currentProgress || contentProgress - (currentProgress.contentProgress || 0) >= 20) {
+            const progressPoints = Math.min(5, Math.max(1, Math.floor(contentProgress / 20)));
+            
+            await statsService.addPoints(
+              auth.userId,
+              progressPoints,
+              ActivityType.LESSON_PROGRESS,
+              lessonId
+            );
+            
+            // Add time spent to user stats
+            if (timeSpent) {
+              await statsService.addTimeSpent(auth.userId, timeSpent);
+            }
+          }
+        } catch (error) {
+          console.error("Error updating progress stats:", error);
+        }
+      }
 
       return { data: progress };
     },
