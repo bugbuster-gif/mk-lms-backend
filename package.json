@@ -19,6 +19,7 @@
     "pino": "^9.7.0",
     "pino-pretty": "^13.0.0",
     "resend": "^4.6.0",
+    "svix": "^1.67.0",
     "uploadthing": "^7.7.2"
   },
   "devDependencies": {

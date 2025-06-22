@@ -12,6 +12,7 @@ import { question } from "../modules/question";
 import { ticket } from "../modules/ticket";
 import { ticketResponse } from "../modules/ticketResponse";
 import { uploads } from "../modules/uploads";
+import { user } from "../modules/user";
 
 const PORT = process.env.PORT!;
 
@@ -38,6 +39,7 @@ const app = new Elysia()
   .use(ticket)
   .use(ticketResponse)
   .use(uploads)
+  .use(user)
   .listen(PORT);
 
 logger.info(
