@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia";
 import { clerkPlugin } from "elysia-clerk";
 import { UTApi } from "uploadthing/server";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import PDFDocument from "pdfkit";
 import path from "path";
 import fs from "fs";
@@ -207,8 +207,12 @@ export const uploads = new Elysia({ prefix: "/uploads" })
         const [enrollment] = await db
           .select()
           .from(enrollments)
-          .where(eq(enrollments.userId, auth.userId))
-          .where(eq(enrollments.courseId, courseId));
+          .where(
+            and(
+              eq(enrollments.userId, auth.userId),
+              eq(enrollments.courseId, courseId),
+            ),
+          );
 
         if (!enrollment) {
           set.status = 403;
@@ -259,7 +263,7 @@ export const uploads = new Elysia({ prefix: "/uploads" })
         if (!courseElement)
           courseElement = document.querySelector("text[y='350']");
         if (courseElement) {
-          courseElement.textContent = course.name;
+          courseElement.textContent = course.title;
         }
 
         let dateElement = document.querySelector("text[id='certificate-date']");
@@ -293,11 +297,11 @@ export const uploads = new Elysia({ prefix: "/uploads" })
         try {
           // Create PDF document with fixed landscape dimensions
           const doc = new PDFDocument({
-            layout: "landscape",
+            layout: "portrait",
             size: [CERTIFICATE_WIDTH, CERTIFICATE_HEIGHT],
             margin: 0, // Remove margins
             info: {
-              Title: `${course.name} Certificate - ${user.name}`,
+              Title: `${course.title} Certificate - ${user.name}`,
               Author: "Ellevate Academy",
               Subject: "Course Completion Certificate",
             },
@@ -315,7 +319,7 @@ export const uploads = new Elysia({ prefix: "/uploads" })
           SVGtoPDF(doc, svgElement, 0, 0, {
             width: CERTIFICATE_WIDTH,
             height: CERTIFICATE_HEIGHT,
-            preserveAspectRatio: "xMidYMid meet",
+            preserveAspectRatio: "xMinYMin meet",
             assumePt: true,
           });
 
@@ -325,7 +329,7 @@ export const uploads = new Elysia({ prefix: "/uploads" })
 
           set.headers["Content-Type"] = "application/pdf";
           set.headers["Content-Disposition"] =
-            `attachment; filename="${user.name.replace(/\s+/g, "_")}_${course.name.replace(/\s+/g, "_")}_Certificate.pdf"`;
+            `attachment; filename="${user.name.replace(/\s+/g, "_")}_${course.title.replace(/\s+/g, "_")}_Certificate.pdf"`;
 
           return pdfBuffer;
         } catch (error) {
