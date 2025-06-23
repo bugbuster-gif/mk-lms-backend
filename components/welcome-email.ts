@@ -44,7 +44,7 @@ export const EmailTemplate = ({ firstName }: EmailTemplateProps) => `
                   <table border="0" cellpadding="0" cellspacing="0" role="presentation">
                     <tr>
                       <td align="center" style="border-radius: 4px; background: linear-gradient(to right, #006666, #008080);">
-                        <a href="https://melanintribe.com/courses" target="_blank" style="display: inline-block; padding: 12px 24px; color: #ffffff; font-weight: 300; text-decoration: none; font-size: 16px;">
+                        <a href="https://ellevate-scjv.vercel.app/courses" target="_blank" style="display: inline-block; padding: 12px 24px; color: #ffffff; font-weight: 300; text-decoration: none; font-size: 16px;">
                           Explore Our Courses
                         </a>
                       </td>
