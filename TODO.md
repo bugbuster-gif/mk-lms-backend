@@ -73,6 +73,13 @@ This document outlines the implementation plan for adding gamification features 
 - [x] Create daily streak check job
 - [x] Create leaderboard calculation job
 
+## Code Improvements
+- [ ] Refactor services according to Elysia best practices:
+  - [ ] Use abstract classes with static methods for stateless services
+  - [ ] Implement request-dependent services as Elysia instances
+  - [ ] Use decorators only for request-dependent properties
+  - [ ] Ensure proper type safety with Elysia's typing system
+
 ## Testing
 - [ ] Unit Tests
   - [ ] Test `StatsService` functionality

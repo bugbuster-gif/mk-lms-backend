@@ -1,7 +1,7 @@
 import { db } from "../db/db";
 import { streaks } from "../db/schemas/streaks.schema";
 import { activityLog } from "../db/schemas/activity-log.schema";
-import { eq, and, gte, desc } from "drizzle-orm";
+import { and, desc, eq, gte } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
 import { isSameDay, startOfDay, subDays } from "date-fns";
 import { sql } from "drizzle-orm/sql";
@@ -162,7 +162,11 @@ export class StreakService {
       .limit(1);
 
     if (userStreak.length === 0) {
-      return null;
+      return {
+        currentStreak: 0,
+        longestStreak: 0,
+        lastActivityDate: new Date(Date.now()),
+      };
     }
 
     return {
@@ -229,18 +233,30 @@ export class StreakService {
     const topStreaks = await db
       .select({
         userId: streaks.userId,
-        name: sql<string>`users.name`,
-        avatarUrl: sql<string | null>`users.avatar_url`,
+        name: sql<string>`users
+        .
+        name`,
+        avatarUrl: sql<string | null>`users
+        .
+        avatar_url`,
         currentStreak: streaks.currentStreak,
         longestStreak: streaks.longestStreak,
       })
       .from(streaks)
-      .innerJoin(users, eq(streaks.userId, sql`users.id`))
+      .innerJoin(
+        users,
+        eq(
+          streaks.userId,
+          sql`users
+      .
+      id`,
+        ),
+      )
       .orderBy(desc(streaks.currentStreak))
       .limit(limit);
-      
+
     // Convert null avatarUrl to undefined to match the return type
-    return topStreaks.map(streak => ({
+    return topStreaks.map((streak) => ({
       ...streak,
       avatarUrl: streak.avatarUrl || undefined,
     }));

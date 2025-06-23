@@ -3,7 +3,11 @@ import { clerkPlugin } from "elysia-clerk";
 import { and, eq } from "drizzle-orm";
 import { Resend } from "resend";
 import { db } from "../db/db";
-import { tickets } from "../db/schemas/ticket.schema";
+import {
+  tickets,
+  ticketStatusEnum,
+  ticketTypeEnum,
+} from "../db/schemas/ticket.schema";
 import { users } from "../db/schemas/user.schema";
 import { courses } from "../db/schemas/course.schema";
 import { NewTicketEmail, TicketStatusEmail } from "../components/ticket-email";
@@ -12,7 +16,7 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL!;
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Define Elysia schema for query parameters using the enum values
-const ticketQuerySchema = {
+const ticketQuerySchema = t.Object({
   userId: t.Optional(t.String()),
   status: t.Optional(
     t.Enum({
@@ -31,7 +35,7 @@ const ticketQuerySchema = {
       GENERAL_INQUIRY: "GENERAL_INQUIRY",
     }),
   ),
-};
+});
 
 // @ts-ignore
 export const ticket = new Elysia({ prefix: "/tickets" })
@@ -53,12 +57,12 @@ export const ticket = new Elysia({ prefix: "/tickets" })
 
         if (userId) conditions.push(eq(tickets.userId, userId));
         if (status) {
-          // @ts-ignore
-          conditions.push(eq(tickets.status, status));
+          // Cast string to enum value using type assertion
+          conditions.push(eq(tickets.status, status as any));
         }
         if (type) {
-          // @ts-ignore
-          conditions.push(eq(tickets.type, type));
+          // Cast string to enum value using type assertion
+          conditions.push(eq(tickets.type, type as any));
         }
 
         const data = await db.query.tickets.findMany({
@@ -71,6 +75,7 @@ export const ticket = new Elysia({ prefix: "/tickets" })
               },
             },
           },
+          orderBy: (tickets, { desc }) => [desc(tickets.createdAt)],
         });
 
         return { data };
@@ -80,7 +85,13 @@ export const ticket = new Elysia({ prefix: "/tickets" })
         return { error: err.message || "Failed to fetch tickets" };
       }
     },
-    { query: ticketQuerySchema },
+    {
+      query: ticketQuerySchema,
+      detail: {
+        summary: "Get all tickets with optional filters",
+        tags: ["tickets"],
+      },
+    },
   )
 
   // Get user's tickets
@@ -256,12 +267,14 @@ export const ticket = new Elysia({ prefix: "/tickets" })
       body: t.Object({
         title: t.String(),
         description: t.String(),
-        priority: t.Enum({
-          LOW: "LOW",
-          MEDIUM: "MEDIUM",
-          HIGH: "HIGH",
-          URGENT: "URGENT",
-        }),
+        priority: t.Optional(
+          t.Enum({
+            LOW: "LOW",
+            MEDIUM: "MEDIUM",
+            HIGH: "HIGH",
+            URGENT: "URGENT",
+          }),
+        ),
         type: t.Enum({
           TECHNICAL_ISSUE: "TECHNICAL_ISSUE",
           CONTENT_INQUIRY: "CONTENT_INQUIRY",
