@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="842px" height="595px" viewBox="0 0 842 595" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Certificate of Completion - Ellevate Academy -->
+    
+    <!-- Definitions for gradients and patterns -->
+    <defs>
+        <!-- Main brand gradient (from #006666 to #008080 to #8BC34A) -->
+        <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#006666" />
+            <stop offset="50%" style="stop-color:#008080" />
+            <stop offset="100%" style="stop-color:#8BC34A" />
+        </linearGradient>
+        
+        <!-- Background pattern -->
+        <pattern id="bgPattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+            <rect x="0" y="0" width="20" height="20" fill="#f9f9f9"/>
+            <circle cx="10" cy="10" r="1" fill="#e0e0e0"/>
+        </pattern>
+        
+        <!-- Decorative pattern for corners -->
+        <pattern id="cornerPattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+            <path d="M0,0 L100,0 L0,100 Z" fill="#006666" opacity="0.05"/>
+            <path d="M100,0 L100,100 L0,100 Z" fill="#8BC34A" opacity="0.05"/>
+        </pattern>
+        
+        <!-- Mask for circular seal -->
+        <mask id="sealMask">
+            <circle cx="700" cy="450" r="60" fill="white"/>
+        </mask>
+    </defs>
+    
+    <!-- Main background -->
+    <rect x="0" y="0" width="842" height="595" fill="url(#bgPattern)" />
+    
+    <!-- Decorative corner elements -->
+    <rect x="0" y="0" width="200" height="200" fill="url(#cornerPattern)" />
+    <rect x="642" y="0" width="200" height="200" fill="url(#cornerPattern)" transform="rotate(90 742 100)" />
+    <rect x="0" y="395" width="200" height="200" fill="url(#cornerPattern)" transform="rotate(270 100 495)" />
+    <rect x="642" y="395" width="200" height="200" fill="url(#cornerPattern)" transform="rotate(180 742 495)" />
+    
+    <!-- Main border with brand gradient -->
+    <rect x="30" y="30" width="782" height="535" rx="8" ry="8" fill="none" stroke="url(#brandGradient)" stroke-width="3" />
+    
+    <!-- Header with brand gradient -->
+    <rect x="30" y="30" width="782" height="80" rx="8" ry="8" fill="url(#brandGradient)" />
+    
+    <!-- Ellevate Academy Logo -->
+    <g transform="translate(50, 50)">
+        <text x="10" y="35" fill="url(#brandGradient)" font-family="Arial, sans-serif" font-weight="700" font-size="36">ellevate</text>
+        <text x="10" y="60" fill="#ffffff" font-family="Arial, sans-serif" font-weight="300" font-size="20">academy</text>
+    </g>
+    <text x="50" y="95" fill="#ffffff" font-family="Arial, sans-serif" font-weight="300" font-size="12">powered by Melanin Kapital</text>
+    
+    <!-- Certificate title -->
+    <text x="421" y="160" font-family="Arial, sans-serif" font-size="42" font-weight="300" text-anchor="middle" fill="#006666">Certificate of Completion</text>
+    
+    <!-- Decorative elements -->
+    <path d="M271,175 Q346,155 421,175 Q496,195 571,175" stroke="url(#brandGradient)" stroke-width="2" fill="none" />
+    <path d="M271,185 Q346,205 421,185 Q496,165 571,185" stroke="url(#brandGradient)" stroke-width="2" fill="none" />
+    
+    <!-- Certificate text -->
+    <text x="421" y="220" font-family="Arial, sans-serif" font-size="18" font-weight="300" text-anchor="middle" fill="#444444">This is to certify that</text>
+    
+    <!-- Placeholder for recipient name -->
+    <text id="recipient-name" data-field="recipient-name" x="421" y="270" font-family="Arial, sans-serif" font-size="32" font-weight="bold" font-style="italic" text-anchor="middle" fill="#006666">[Recipient Name]</text>
+    
+    <!-- Certificate body text -->
+    <text x="421" y="310" font-family="Arial, sans-serif" font-size="18" font-weight="300" text-anchor="middle" fill="#444444">has successfully completed the course</text>
+    
+    <!-- Course name placeholder -->
+    <text id="course-name" data-field="course-name" x="421" y="350" font-family="Arial, sans-serif" font-size="28" font-weight="bold" text-anchor="middle" fill="#008080">[Course Name]</text>
+    
+    <!-- Course details -->
+    <g transform="translate(421, 380)" text-anchor="middle">
+        <text y="0" font-family="Arial, sans-serif" font-size="16" font-weight="300" fill="#666666">with distinction and has demonstrated proficiency in all required skills</text>
+    </g>
+    
+    <!-- Date section -->
+    <text x="421" y="420" font-family="Arial, sans-serif" font-size="16" font-weight="300" text-anchor="middle" fill="#666666">Awarded on</text>
+    <text id="certificate-date" data-field="date" x="421" y="445" font-family="Arial, sans-serif" font-size="18" font-weight="bold" text-anchor="middle" fill="#006666">[Date]</text>
+    
+    <!-- Signature section -->
+    <line x1="200" y1="480" x2="350" y2="480" stroke="#008080" stroke-width="1" />
+    <text x="275" y="500" font-family="Arial, sans-serif" font-size="16" font-weight="400" text-anchor="middle" fill="#006666">Melanin Keita</text>
+    <text x="275" y="520" font-family="Arial, sans-serif" font-size="14" font-weight="300" text-anchor="middle" fill="#666666">Founder, Ellevate Academy</text>
+    
+    <!-- Signature image (stylized representation) -->
+    <path d="M220,460 c5,-10 10,-5 15,-10 c5,-5 10,0 15,-5 c10,-10 15,5 20,0 c5,-5 10,-15 15,-5 c5,10 10,5 15,0 c5,-5 10,-10 15,-5 c5,5 10,15 15,5 c5,-10 10,-5 15,-10" fill="none" stroke="#006666" stroke-width="1.5" />
+    
+    <!-- Official seal -->
+    <g transform="translate(700, 450)">
+        <circle cx="0" cy="0" r="60" fill="none" stroke="url(#brandGradient)" stroke-width="2" />
+        <circle cx="0" cy="0" r="55" fill="none" stroke="#8BC34A" stroke-width="1" stroke-dasharray="3,3" />
+        <circle cx="0" cy="0" r="50" fill="none" stroke="#006666" stroke-width="1" />
+        <text x="0" y="-15" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#006666">OFFICIAL</text>
+        <text x="0" y="5" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#006666">ELLEVATE</text>
+        <text x="0" y="25" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#006666">CERTIFICATE</text>
+    </g>
+    
+    <!-- Decorative elements -->
+    <path d="M30,565 L812,565" stroke="url(#brandGradient)" stroke-width="2" stroke-dasharray="1,5" />
+    
+    <!-- Certificate ID -->
+    <text id="certificate-id" data-field="certificate-id" x="421" y="550" font-family="Arial, sans-serif" font-size="12" font-weight="300" text-anchor="middle" fill="#666666">Certificate ID: [Certificate ID] • Verify at ellevate-academy.com/verify</text>
+    
+    <!-- Decorative flourishes -->
+    <path d="M100,200 Q150,220 100,240 Q50,260 100,280 Q150,300 100,320" stroke="#8BC34A" stroke-width="1" fill="none" opacity="0.3" />
+    <path d="M742,200 Q692,220 742,240 Q792,260 742,280 Q692,300 742,320" stroke="#006666" stroke-width="1" fill="none" opacity="0.3" />
+</svg>

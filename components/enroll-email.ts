@@ -23,8 +23,20 @@ export const EnrollEmail = ({
       <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
         <tr>
           <td align="center">
-            <img src="https://d2oi1rqwb0pj00.cloudfront.net/community/nio_1749313794850_100.webp" alt="Melanin Tribe Logo" style="display: block; max-width: 180px; height: auto; margin: 0 auto;" />
-            <div style="margin-top: 5px; font-size: 12px; color: #ffffff; font-weight: 300;">POWERED BY ECOBANK ELLEVATE</div>
+            <div style="margin: 0 auto; width: 180px;">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 80" style="width: 100%; height: auto;">
+                <defs>
+                  <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#006666" />
+                    <stop offset="50%" style="stop-color:#008080" />
+                    <stop offset="100%" style="stop-color:#8BC34A" />
+                  </linearGradient>
+                </defs>
+                <text x="10" y="45" fill="url(#logoGradient)" font-family="Arial, sans-serif" font-weight="700" font-size="28">ellevate</text>
+                <text x="10" y="70" fill="#ffffff" font-family="Arial, sans-serif" font-weight="300" font-size="16">academy</text>
+              </svg>
+            </div>
+            <div style="margin-top: 5px; font-size: 12px; color: #ffffff; font-weight: 300;">powered by Melanin Kapital</div>
           </td>
         </tr>
       </table>
@@ -131,7 +143,7 @@ export const EnrollEmail = ({
               If you have any questions, please don't hesitate to contact our support team.
             </p>
             <p style="font-size: 12px; color: #999999; margin: 0; font-weight: 300;">
-              2025 Melanin Tribe. All rights reserved.
+              2025 Ellevate Academy. All rights reserved.
             </p>
           </td>
         </tr>
