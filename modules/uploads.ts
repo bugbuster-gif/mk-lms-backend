@@ -17,6 +17,10 @@ import { Roles } from "../utils/enums";
 const utapi = new UTApi();
 const certificateTemplatePath = path.join(__dirname, "/files/cert.svg");
 
+// Certificate dimensions (landscape format)
+const CERTIFICATE_WIDTH = 842;
+const CERTIFICATE_HEIGHT = 595;
+
 export const uploads = new Elysia({ prefix: "/uploads" })
   .use(clerkPlugin())
   // Test route for certificate generation (for development only)
@@ -24,7 +28,7 @@ export const uploads = new Elysia({ prefix: "/uploads" })
     try {
       console.log("Starting test certificate generation");
       console.log(`Template path: ${certificateTemplatePath}`);
-      
+
       // Check if SVG template exists
       if (!fs.existsSync(certificateTemplatePath)) {
         console.error("SVG template not found at:", certificateTemplatePath);
@@ -39,7 +43,7 @@ export const uploads = new Elysia({ prefix: "/uploads" })
       // Parse SVG using JSDOM
       const dom = new JSDOM(svgTemplate);
       const document = dom.window.document;
-      
+
       // Sample data
       const userName = "John Doe";
       const courseName = "Advanced Web Development";
@@ -53,7 +57,10 @@ export const uploads = new Elysia({ prefix: "/uploads" })
       // Find and replace placeholders in the SVG
       // Using more robust selectors with fallbacks
       let nameElement = document.querySelector("text[id='recipient-name']");
-      if (!nameElement) nameElement = document.querySelector("text[data-field='recipient-name']");
+      if (!nameElement)
+        nameElement = document.querySelector(
+          "text[data-field='recipient-name']",
+        );
       if (!nameElement) nameElement = document.querySelector("text[y='270']");
       if (nameElement) {
         console.log("Found name element, setting to:", userName);
@@ -63,8 +70,12 @@ export const uploads = new Elysia({ prefix: "/uploads" })
       }
 
       let courseElement = document.querySelector("text[id='course-name']");
-      if (!courseElement) courseElement = document.querySelector("text[data-field='course-name']");
-      if (!courseElement) courseElement = document.querySelector("text[y='350']");
+      if (!courseElement)
+        courseElement = document.querySelector(
+          "text[data-field='course-name']",
+        );
+      if (!courseElement)
+        courseElement = document.querySelector("text[y='350']");
       if (courseElement) {
         console.log("Found course element, setting to:", courseName);
         courseElement.textContent = courseName;
@@ -73,7 +84,8 @@ export const uploads = new Elysia({ prefix: "/uploads" })
       }
 
       let dateElement = document.querySelector("text[id='certificate-date']");
-      if (!dateElement) dateElement = document.querySelector("text[data-field='date']");
+      if (!dateElement)
+        dateElement = document.querySelector("text[data-field='date']");
       if (!dateElement) dateElement = document.querySelector("text[y='445']");
       if (dateElement) {
         console.log("Found date element, setting to:", date);
@@ -83,8 +95,12 @@ export const uploads = new Elysia({ prefix: "/uploads" })
       }
 
       let certIdElement = document.querySelector("text[id='certificate-id']");
-      if (!certIdElement) certIdElement = document.querySelector("text[data-field='certificate-id']");
-      if (!certIdElement) certIdElement = document.querySelector("text[y='550']");
+      if (!certIdElement)
+        certIdElement = document.querySelector(
+          "text[data-field='certificate-id']",
+        );
+      if (!certIdElement)
+        certIdElement = document.querySelector("text[y='550']");
       if (certIdElement) {
         console.log("Found certificate ID element, setting to:", certificateId);
         certIdElement.textContent = `Certificate ID: ${certificateId} • Verify at ellevate-academy.com/verify`;
@@ -94,50 +110,54 @@ export const uploads = new Elysia({ prefix: "/uploads" })
 
       // Get the modified SVG
       const modifiedSvg = dom.serialize();
-      
+
       // Extract SVG element as string
       const svgElement = modifiedSvg.substring(
         modifiedSvg.indexOf("<svg"),
-        modifiedSvg.indexOf("</svg>") + 6
+        modifiedSvg.indexOf("</svg>") + 6,
       );
-      
+
       console.log("Modified SVG extracted, length:", svgElement.length);
 
       try {
-        // Create PDF document
-        const doc = new PDFDocument({ 
-          layout: "landscape", 
-          size: [842, 595],
+        // Create PDF document with fixed landscape dimensions
+        const doc = new PDFDocument({
+          layout: "portrait",
+          size: [CERTIFICATE_WIDTH, CERTIFICATE_HEIGHT],
+          margin: 0, // Remove margins
           info: {
             Title: "Ellevate Academy Certificate",
             Author: "Ellevate Academy",
             Subject: "Course Completion Certificate",
-          }
+          },
         });
-        
+
         const buffers: Buffer[] = [];
         doc.on("data", (chunk) => buffers.push(chunk));
-        
+
         const pdfBufferPromise = new Promise<Buffer>((resolve) => {
           doc.on("end", () => resolve(Buffer.concat(buffers)));
         });
-        
+
         // Convert SVG to PDF using svg-to-pdfkit
+        // Ensure the SVG fills the entire PDF page
         SVGtoPDF(doc, svgElement, 0, 0, {
-          width: doc.page.width,
-          height: doc.page.height,
+          width: CERTIFICATE_WIDTH,
+          height: CERTIFICATE_HEIGHT,
           preserveAspectRatio: "xMidYMid meet",
+          assumePt: true,
         });
-        
+
         doc.end();
         console.log("PDF document ended");
-        
+
         const pdfBuffer = await pdfBufferPromise;
         console.log("PDF buffer created, size:", pdfBuffer.length);
-        
+
         set.headers["Content-Type"] = "application/pdf";
-        set.headers["Content-Disposition"] = `attachment; filename="test_certificate.pdf"`;
-        
+        set.headers["Content-Disposition"] =
+          `attachment; filename="test_certificate.pdf"`;
+
         return pdfBuffer;
       } catch (error) {
         console.error("Error converting SVG to PDF:", error);
@@ -150,7 +170,7 @@ export const uploads = new Elysia({ prefix: "/uploads" })
       return { error: `Failed to generate certificate: ${error.message}` };
     }
   })
-  
+
   // Generate certificate PDF
   .post(
     "/:courseId",
@@ -222,75 +242,91 @@ export const uploads = new Elysia({ prefix: "/uploads" })
         // Find and replace placeholders in the SVG
         // Using more robust selectors with fallbacks
         let nameElement = document.querySelector("text[id='recipient-name']");
-        if (!nameElement) nameElement = document.querySelector("text[data-field='recipient-name']");
+        if (!nameElement)
+          nameElement = document.querySelector(
+            "text[data-field='recipient-name']",
+          );
         if (!nameElement) nameElement = document.querySelector("text[y='270']");
         if (nameElement) {
           nameElement.textContent = user.name;
         }
 
         let courseElement = document.querySelector("text[id='course-name']");
-        if (!courseElement) courseElement = document.querySelector("text[data-field='course-name']");
-        if (!courseElement) courseElement = document.querySelector("text[y='350']");
+        if (!courseElement)
+          courseElement = document.querySelector(
+            "text[data-field='course-name']",
+          );
+        if (!courseElement)
+          courseElement = document.querySelector("text[y='350']");
         if (courseElement) {
           courseElement.textContent = course.name;
         }
 
         let dateElement = document.querySelector("text[id='certificate-date']");
-        if (!dateElement) dateElement = document.querySelector("text[data-field='date']");
+        if (!dateElement)
+          dateElement = document.querySelector("text[data-field='date']");
         if (!dateElement) dateElement = document.querySelector("text[y='445']");
         if (dateElement) {
           dateElement.textContent = date;
         }
 
         let certIdElement = document.querySelector("text[id='certificate-id']");
-        if (!certIdElement) certIdElement = document.querySelector("text[data-field='certificate-id']");
-        if (!certIdElement) certIdElement = document.querySelector("text[y='550']");
+        if (!certIdElement)
+          certIdElement = document.querySelector(
+            "text[data-field='certificate-id']",
+          );
+        if (!certIdElement)
+          certIdElement = document.querySelector("text[y='550']");
         if (certIdElement) {
           certIdElement.textContent = `Certificate ID: ${certificateId} • Verify at ellevate-academy.com/verify`;
         }
 
         // Get the modified SVG
         const modifiedSvg = dom.serialize();
-        
+
         // Extract SVG element as string
         const svgElement = modifiedSvg.substring(
           modifiedSvg.indexOf("<svg"),
-          modifiedSvg.indexOf("</svg>") + 6
+          modifiedSvg.indexOf("</svg>") + 6,
         );
 
         try {
-          // Create PDF document
-          const doc = new PDFDocument({ 
-            layout: "landscape", 
-            size: [842, 595],
+          // Create PDF document with fixed landscape dimensions
+          const doc = new PDFDocument({
+            layout: "landscape",
+            size: [CERTIFICATE_WIDTH, CERTIFICATE_HEIGHT],
+            margin: 0, // Remove margins
             info: {
               Title: `${course.name} Certificate - ${user.name}`,
               Author: "Ellevate Academy",
               Subject: "Course Completion Certificate",
-            }
+            },
           });
-          
+
           const buffers: Buffer[] = [];
           doc.on("data", (chunk) => buffers.push(chunk));
-          
+
           const pdfBufferPromise = new Promise<Buffer>((resolve) => {
             doc.on("end", () => resolve(Buffer.concat(buffers)));
           });
-          
+
           // Convert SVG to PDF using svg-to-pdfkit
+          // Ensure the SVG fills the entire PDF page
           SVGtoPDF(doc, svgElement, 0, 0, {
-            width: doc.page.width,
-            height: doc.page.height,
+            width: CERTIFICATE_WIDTH,
+            height: CERTIFICATE_HEIGHT,
             preserveAspectRatio: "xMidYMid meet",
+            assumePt: true,
           });
-          
+
           doc.end();
-          
+
           const pdfBuffer = await pdfBufferPromise;
-          
+
           set.headers["Content-Type"] = "application/pdf";
-          set.headers["Content-Disposition"] = `attachment; filename="${user.name.replace(/\s+/g, "_")}_${course.name.replace(/\s+/g, "_")}_Certificate.pdf"`;
-          
+          set.headers["Content-Disposition"] =
+            `attachment; filename="${user.name.replace(/\s+/g, "_")}_${course.name.replace(/\s+/g, "_")}_Certificate.pdf"`;
+
           return pdfBuffer;
         } catch (error) {
           console.error("Error converting SVG to PDF:", error);
@@ -307,7 +343,7 @@ export const uploads = new Elysia({ prefix: "/uploads" })
       params: t.Object({
         courseId: t.String(),
       }),
-    }
+    },
   )
   // Delete uploaded file
   .delete(
@@ -341,5 +377,5 @@ export const uploads = new Elysia({ prefix: "/uploads" })
       body: t.Object({
         key: t.String(),
       }),
-    }
+    },
   );
