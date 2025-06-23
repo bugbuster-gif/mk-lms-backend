@@ -76,7 +76,7 @@ export const user = new Elysia({ prefix: "/users" })
             email_addresses.find(
               (email: { id: any }) => email.id === primary_email_address_id,
             )?.email_address || email_addresses[0].email_address,
-          subject: "Welcome to Law Tech University",
+          subject: "Welcome to Ecobank Elevate",
           html: htmlContent,
         });
 
