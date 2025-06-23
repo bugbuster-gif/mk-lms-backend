@@ -81,7 +81,7 @@
     
     <!-- Signature section -->
     <line x1="200" y1="480" x2="350" y2="480" stroke="#008080" stroke-width="1" />
-    <text x="275" y="500" font-family="Arial, sans-serif" font-size="16" font-weight="400" text-anchor="middle" fill="#006666">Melanie Keita</text>
+    <text x="275" y="500" font-family="Arial, sans-serif" font-size="16" font-weight="400" text-anchor="middle" fill="#006666">Melaniè Keita</text>
     <text x="275" y="520" font-family="Arial, sans-serif" font-size="14" font-weight="300" text-anchor="middle" fill="#666666">Founder, Ellevate Academy</text>
     
     <!-- Signature image (stylized representation) -->
