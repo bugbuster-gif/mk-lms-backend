@@ -224,7 +224,7 @@ export const ticket = new Elysia({ prefix: "/tickets" })
           });
 
           await resend.emails.send({
-            from: "Law Tech University <noreply@trainings.lawyershub.org>",
+            from: "Ecobank Elevate <noreply@communication.devprodtest.services>",
             to: ADMIN_EMAIL,
             subject: `New Ticket: ${ticket.title}`,
             html: adminEmailContent,
@@ -242,7 +242,7 @@ export const ticket = new Elysia({ prefix: "/tickets" })
           });
 
           await resend.emails.send({
-            from: "Law Tech University <noreply@trainings.lawyershub.org>",
+            from: "Ecobank Elevate <noreply@communication.devprodtest.services>",
             to: user.email,
             subject: "Your Support Ticket Has Been Created",
             html: userEmailContent,
@@ -345,7 +345,7 @@ export const ticket = new Elysia({ prefix: "/tickets" })
             });
 
             await resend.emails.send({
-              from: "Law Tech University <noreply@trainings.lawyershub.org>",
+              from: "Ecobank Elevate <noreply@communication.devprodtest.services>",
               to: user.email,
               subject: `Ticket Status Updated: ${ticket.title}`,
               html: userEmailContent,

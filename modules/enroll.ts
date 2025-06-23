@@ -196,7 +196,7 @@ export const enroll = new Elysia({ prefix: "/enroll" })
           });
 
           await resend.emails.send({
-            from: "Law Tech University <noreply@trainings.lawyershub.org>",
+            from: "Ecobank Elevate <noreply@communication.devprodtest.services>",
             to: user.email,
             subject: `You've been enrolled in ${course.title}`,
             html: htmlContent,

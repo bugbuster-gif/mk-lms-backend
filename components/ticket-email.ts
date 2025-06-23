@@ -18,37 +18,125 @@ export const NewTicketEmail = ({
   courseName?: string;
   isAdmin?: boolean;
 }) => `
-  <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 16px; background-color: #f9f9f9;">
-    <img src="https://utfs.io/f/phrFL61UtA1zRqqMWN50uStCI1N23axLd5Oq97mK8knlDMgp" alt="Law Tech University Logo" style="display: block; width: 150px; margin: 0 auto 20px;" />
-
-    <div style="background-color: #ffffff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-      <h1 style="color: #a31c24; font-size: 24px; margin-bottom: 20px; text-align: center;">
-        New Support Ticket Created
-      </h1>
-
-      <div style="background-color: #f0f0f0; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
-        <p style="margin: 5px 0;"><strong>Ticket ID:</strong> ${ticketId}</p>
-        <p style="margin: 5px 0;"><strong>Created By:</strong> ${userName}</p>
-        <p style="margin: 5px 0;"><strong>Type:</strong> ${type}</p>
-        <p style="margin: 5px 0;"><strong>Priority:</strong> ${priority}</p>
-        ${courseName ? `<p style="margin: 5px 0;"><strong>Course:</strong> ${courseName}</p>` : ""}
-      </div>
-
-      <h2 style="color: #2c3e50; font-size: 18px; margin-bottom: 10px;">${title}</h2>
-      <p style="background-color: #fff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
-        ${description}
-      </p>
-
-      <div style="text-align: center; margin-top: 30px;">
-        <a href="https://lawtech.university/${isAdmin ? "ticket-list" : "tickets"}/${ticketId}" style="background-color: #a31c24; color: #ffffff; padding: 12px 24px; border-radius: 5px; text-decoration: none; font-weight: bold;">
-          View Ticket
-        </a>
-      </div>
+  <div style="font-family: 'Arial', 'Helvetica', sans-serif; line-height: 1.6; color: #333333; max-width: 600px; margin: 0 auto; padding: 0; background-color: #ffffff;">
+    <!-- Header with gradient -->
+    <div style="background: linear-gradient(to right, #006666, #008080, #8BC34A); padding: 30px 20px; text-align: center;">
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
+        <tr>
+          <td align="center">
+            <img src="https://d2oi1rqwb0pj00.cloudfront.net/community/nio_1749313794850_100.webp" alt="Melanin Tribe Logo" style="display: block; max-width: 180px; height: auto; margin: 0 auto;" />
+            <div style="margin-top: 5px; font-size: 12px; color: #ffffff; font-weight: 300;">POWERED BY ECOBANK ELLEVATE</div>
+          </td>
+        </tr>
+      </table>
     </div>
-
-    <p style="text-align: center; font-size: 14px; color: #666; margin-top: 20px;">
-      This is an automated message. Please do not reply directly to this email.
-    </p>
+    
+    <!-- Main Content -->
+    <div style="padding: 30px 20px; background-color: #ffffff;">
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
+        <tr>
+          <td>
+            <h1 style="color: #006666; font-size: 24px; margin-bottom: 20px; font-weight: 300; text-align: center;">
+              New Support Ticket Created
+            </h1>
+            
+            <!-- Ticket Info Box -->
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom: 25px; background-color: #f9f9f9; border-radius: 6px;">
+              <tr>
+                <td style="padding: 15px;">
+                  <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
+                    <tr>
+                      <td style="padding: 8px 0;">
+                        <span style="color: #666666; font-weight: 300;">Ticket ID:</span> 
+                        <span style="color: #006666; font-weight: 400;">${ticketId}</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 8px 0;">
+                        <span style="color: #666666; font-weight: 300;">Created By:</span> 
+                        <span style="color: #006666; font-weight: 400;">${userName}</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 8px 0;">
+                        <span style="color: #666666; font-weight: 300;">Type:</span> 
+                        <span style="color: #006666; font-weight: 400;">${type}</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 8px 0;">
+                        <span style="color: #666666; font-weight: 300;">Priority:</span> 
+                        <span style="color: #006666; font-weight: 400;">${priority}</span>
+                      </td>
+                    </tr>
+                    ${
+                      courseName
+                        ? `
+                    <tr>
+                      <td style="padding: 8px 0;">
+                        <span style="color: #666666; font-weight: 300;">Course:</span> 
+                        <span style="color: #006666; font-weight: 400;">${courseName}</span>
+                      </td>
+                    </tr>
+                    `
+                        : ""
+                    }
+                  </table>
+                </td>
+              </tr>
+            </table>
+            
+            <!-- Ticket Title -->
+            <h2 style="color: #008080; font-size: 18px; margin-bottom: 10px; font-weight: 400;">
+              ${title}
+            </h2>
+            
+            <!-- Ticket Description -->
+            <div style="border-left: 3px solid #8BC34A; padding-left: 15px; margin-bottom: 25px; background-color: #f9f9f9; padding: 15px 15px 15px 18px; border-radius: 0 6px 6px 0;">
+              <p style="font-size: 15px; margin: 0; font-weight: 300; color: #444444;">
+                ${description}
+              </p>
+            </div>
+            
+            <!-- Decorative element -->
+            <div style="height: 2px; background: linear-gradient(to right, #006666, #008080, #8BC34A); margin: 25px 0;"></div>
+            
+            <!-- CTA Button -->
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
+              <tr>
+                <td align="center" style="padding: 20px 0;">
+                  <table border="0" cellpadding="0" cellspacing="0" role="presentation">
+                    <tr>
+                      <td align="center" style="border-radius: 4px; background: linear-gradient(to right, #006666, #008080);">
+                        <a href="https://melanintribe.com/${isAdmin ? "ticket-list" : "tickets"}/${ticketId}" target="_blank" style="display: inline-block; padding: 12px 24px; color: #ffffff; font-weight: 300; text-decoration: none; font-size: 16px;">
+                          View Ticket
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+    
+    <!-- Footer -->
+    <div style="background-color: #f5f5f5; padding: 20px; text-align: center; border-top: 1px solid #eeeeee;">
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
+        <tr>
+          <td align="center">
+            <p style="font-size: 14px; color: #666666; margin-bottom: 10px; font-weight: 300;">
+              This is an automated message. Please do not reply directly to this email.
+            </p>
+            <p style="font-size: 12px; color: #999999; margin: 0; font-weight: 300;">
+              &copy; 2025 Melanin Tribe. All rights reserved.
+            </p>
+          </td>
+        </tr>
+      </table>
+    </div>
   </div>
 `;
 
@@ -68,35 +156,89 @@ export const TicketResponseEmail = ({
   recipientName: string;
   isAdmin?: boolean;
 }) => `
-  <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 16px; background-color: #f9f9f9;">
-    <img src="https://utfs.io/f/7deJt7gRMIyioevliYRWfV46SeCrtEygKuYPFmZjATX89JzO" alt="LMS Logo" style="display: block; width: 150px; margin: 0 auto 20px;" />
-
-    <div style="background-color: #ffffff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-      <h1 style="color: #a31c24; font-size: 24px; margin-bottom: 20px; text-align: center;">
-        New Response to Your Ticket
-      </h1>
-
-      <p style="margin-bottom: 15px;">Dear ${recipientName},</p>
-
-      <p style="margin-bottom: 15px;">
-        ${responderName} has responded to your ticket: <strong>${ticketTitle}</strong>
-      </p>
-
-      <div style="background-color: #f0f0f0; border-radius: 6px; padding: 15px; margin: 20px 0;">
-        <p style="margin: 0;"><strong>Response:</strong></p>
-        <p style="margin: 10px 0 0 0;">${responseContent}</p>
-      </div>
-
-      <div style="text-align: center; margin-top: 30px;">
-        <a href="https://lawtech.university/${isAdmin ? "ticket-list" : "tickets"}/${ticketId}" style="background-color: #a31c24; color: #ffffff; padding: 12px 24px; border-radius: 5px; text-decoration: none; font-weight: bold;">
-          View Ticket
-        </a>
-      </div>
+  <div style="font-family: 'Arial', 'Helvetica', sans-serif; line-height: 1.6; color: #333333; max-width: 600px; margin: 0 auto; padding: 0; background-color: #ffffff;">
+    <!-- Header with gradient -->
+    <div style="background: linear-gradient(to right, #006666, #008080, #8BC34A); padding: 30px 20px; text-align: center;">
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
+        <tr>
+          <td align="center">
+            <img src="https://utfs.io/f/phrFL61UtA1zRqqMWN50uStCI1N23axLd5Oq97mK8knlDMgp" alt="Melanin Tribe Logo" style="display: block; max-width: 180px; height: auto; margin: 0 auto;" />
+            <div style="margin-top: 5px; font-size: 12px; color: #ffffff; font-weight: 300;">POWERED BY ECOBANK ELLEVATE</div>
+          </td>
+        </tr>
+      </table>
     </div>
-
-    <p style="text-align: center; font-size: 14px; color: #666; margin-top: 20px;">
-      This is an automated message. Please do not reply directly to this email.
-    </p>
+    
+    <!-- Main Content -->
+    <div style="padding: 30px 20px; background-color: #ffffff;">
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
+        <tr>
+          <td>
+            <h1 style="color: #006666; font-size: 24px; margin-bottom: 20px; font-weight: 300; text-align: center;">
+              New Response to Your Ticket
+            </h1>
+            
+            <p style="font-size: 16px; margin-bottom: 15px; font-weight: 300; color: #444444;">
+              Dear ${recipientName},
+            </p>
+            
+            <p style="font-size: 16px; margin-bottom: 20px; font-weight: 300; color: #444444;">
+              ${responderName} has responded to your ticket: <strong style="color: #006666;">${ticketTitle}</strong>
+            </p>
+            
+            <!-- Response Box -->
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom: 25px;">
+              <tr>
+                <td>
+                  <div style="border-left: 3px solid #8BC34A; padding-left: 15px; background-color: #f9f9f9; padding: 15px 15px 15px 18px; border-radius: 0 6px 6px 0;">
+                    <p style="margin: 0 0 10px 0; font-weight: 400; color: #006666;">Response:</p>
+                    <p style="font-size: 15px; margin: 0; font-weight: 300; color: #444444;">
+                      ${responseContent}
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            </table>
+            
+            <!-- Decorative element -->
+            <div style="height: 2px; background: linear-gradient(to right, #006666, #008080, #8BC34A); margin: 25px 0;"></div>
+            
+            <!-- CTA Button -->
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
+              <tr>
+                <td align="center" style="padding: 20px 0;">
+                  <table border="0" cellpadding="0" cellspacing="0" role="presentation">
+                    <tr>
+                      <td align="center" style="border-radius: 4px; background: linear-gradient(to right, #006666, #008080);">
+                        <a href="https://melanintribe.com/${isAdmin ? "ticket-list" : "tickets"}/${ticketId}" target="_blank" style="display: inline-block; padding: 12px 24px; color: #ffffff; font-weight: 300; text-decoration: none; font-size: 16px;">
+                          View Ticket
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+    
+    <!-- Footer -->
+    <div style="background-color: #f5f5f5; padding: 20px; text-align: center; border-top: 1px solid #eeeeee;">
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
+        <tr>
+          <td align="center">
+            <p style="font-size: 14px; color: #666666; margin-bottom: 10px; font-weight: 300;">
+              This is an automated message. Please do not reply directly to this email.
+            </p>
+            <p style="font-size: 12px; color: #999999; margin: 0; font-weight: 300;">
+              &copy; 2025 Melanin Tribe. All rights reserved.
+            </p>
+          </td>
+        </tr>
+      </table>
+    </div>
   </div>
 `;
 
@@ -116,33 +258,88 @@ export const TicketStatusEmail = ({
   updatedBy: string;
   isAdmin?: boolean;
 }) => `
-  <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 16px; background-color: #f9f9f9;">
-    <img src="https://utfs.io/f/7deJt7gRMIyioevliYRWfV46SeCrtEygKuYPFmZjATX89JzO" alt="LMS Logo" style="display: block; width: 150px; margin: 0 auto 20px;" />
-
-    <div style="background-color: #ffffff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-      <h1 style="color: #a31c24; font-size: 24px; margin-bottom: 20px; text-align: center;">
-        Ticket Status Updated
-      </h1>
-
-      <p style="margin-bottom: 15px;">Dear ${recipientName},</p>
-
-      <p style="margin-bottom: 15px;">
-        The status of your ticket <strong>${ticketTitle}</strong> has been updated by ${updatedBy}.
-      </p>
-
-      <div style="background-color: #f0f0f0; border-radius: 6px; padding: 15px; margin: 20px 0;">
-        <p style="margin: 5px 0;"><strong>New Status:</strong> ${newStatus}</p>
-      </div>
-
-      <div style="text-align: center; margin-top: 30px;">
-        <a href="https://lawtech.university/${isAdmin ? "ticket-list" : "tickets"}/${ticketId}" style="background-color: #a31c24; color: #ffffff; padding: 12px 24px; border-radius: 5px; text-decoration: none; font-weight: bold;">
-          View Ticket
-        </a>
-      </div>
+  <div style="font-family: 'Arial', 'Helvetica', sans-serif; line-height: 1.6; color: #333333; max-width: 600px; margin: 0 auto; padding: 0; background-color: #ffffff;">
+    <!-- Header with gradient -->
+    <div style="background: linear-gradient(to right, #006666, #008080, #8BC34A); padding: 30px 20px; text-align: center;">
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
+        <tr>
+          <td align="center">
+            <img src="https://utfs.io/f/phrFL61UtA1zRqqMWN50uStCI1N23axLd5Oq97mK8knlDMgp" alt="Melanin Tribe Logo" style="display: block; max-width: 180px; height: auto; margin: 0 auto;" />
+            <div style="margin-top: 5px; font-size: 12px; color: #ffffff; font-weight: 300;">POWERED BY ECOBANK ELLEVATE</div>
+          </td>
+        </tr>
+      </table>
     </div>
-
-    <p style="text-align: center; font-size: 14px; color: #666; margin-top: 20px;">
-      This is an automated message. Please do not reply directly to this email.
-    </p>
+    
+    <!-- Main Content -->
+    <div style="padding: 30px 20px; background-color: #ffffff;">
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
+        <tr>
+          <td>
+            <h1 style="color: #006666; font-size: 24px; margin-bottom: 20px; font-weight: 300; text-align: center;">
+              Ticket Status Updated
+            </h1>
+            
+            <p style="font-size: 16px; margin-bottom: 15px; font-weight: 300; color: #444444;">
+              Dear ${recipientName},
+            </p>
+            
+            <p style="font-size: 16px; margin-bottom: 20px; font-weight: 300; color: #444444;">
+              The status of your ticket <strong style="color: #006666;">${ticketTitle}</strong> has been updated by ${updatedBy}.
+            </p>
+            
+            <!-- Status Box -->
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom: 25px;">
+              <tr>
+                <td>
+                  <div style="border-left: 3px solid #8BC34A; padding-left: 15px; background-color: #f9f9f9; padding: 15px 15px 15px 18px; border-radius: 0 6px 6px 0;">
+                    <p style="margin: 0 0 10px 0; font-weight: 400; color: #006666;">New Status:</p>
+                    <p style="font-size: 15px; margin: 0; font-weight: 300; color: #444444;">
+                      ${newStatus}
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            </table>
+            
+            <!-- Decorative element -->
+            <div style="height: 2px; background: linear-gradient(to right, #006666, #008080, #8BC34A); margin: 25px 0;"></div>
+            
+            <!-- CTA Button -->
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
+              <tr>
+                <td align="center" style="padding: 20px 0;">
+                  <table border="0" cellpadding="0" cellspacing="0" role="presentation">
+                    <tr>
+                      <td align="center" style="border-radius: 4px; background: linear-gradient(to right, #006666, #008080);">
+                        <a href="https://melanintribe.com/${isAdmin ? "ticket-list" : "tickets"}/${ticketId}" target="_blank" style="display: inline-block; padding: 12px 24px; color: #ffffff; font-weight: 300; text-decoration: none; font-size: 16px;">
+                          View Ticket
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+    
+    <!-- Footer -->
+    <div style="background-color: #f5f5f5; padding: 20px; text-align: center; border-top: 1px solid #eeeeee;">
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
+        <tr>
+          <td align="center">
+            <p style="font-size: 14px; color: #666666; margin-bottom: 10px; font-weight: 300;">
+              This is an automated message. Please do not reply directly to this email.
+            </p>
+            <p style="font-size: 12px; color: #999999; margin: 0; font-weight: 300;">
+              &copy; 2025 Melanin Tribe. All rights reserved.
+            </p>
+          </td>
+        </tr>
+      </table>
+    </div>
   </div>
 `;

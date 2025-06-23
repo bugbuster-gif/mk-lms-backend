@@ -43,7 +43,7 @@ export const ticketResponse = new Elysia({ prefix: "/tickets" })
       params: t.Object({
         id: t.String(),
       }),
-    }
+    },
   )
   // Create a new response
   .post(
@@ -110,7 +110,7 @@ export const ticketResponse = new Elysia({ prefix: "/tickets" })
             });
 
             await resend.emails.send({
-              from: "Law Tech University <noreply@trainings.lawyershub.org>",
+              from: "Ecobank Elevate <noreply@communication.devprodtest.services>",
               to: ticketOwner.email,
               subject: `New Response to Your Ticket: ${ticket.title}`,
               html: userEmailContent,
@@ -128,7 +128,7 @@ export const ticketResponse = new Elysia({ prefix: "/tickets" })
             });
 
             await resend.emails.send({
-              from: "Law Tech University <noreply@trainings.lawyershub.org>",
+              from: "Ecobank Elevate <noreply@communication.devprodtest.services>",
               to: ADMIN_EMAIL,
               subject: `New Response to Ticket: ${ticket.title}`,
               html: adminEmailContent,
@@ -156,5 +156,5 @@ export const ticketResponse = new Elysia({ prefix: "/tickets" })
         content: t.String({ minLength: 1 }),
         attachments: t.Optional(t.Array(t.String())),
       }),
-    }
+    },
   );
