@@ -1,0 +1,47 @@
+# Version control
+.git
+.gitignore
+.github
+
+# Environment variables
+.env
+.env.local
+.env.*
+
+# Node modules and build artifacts
+node_modules
+dist
+*.log
+npm-debug.log*
+
+# Docker files
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Test files
+test
+tests
+__tests__
+coverage
+
+# Documentation
+README.md
+LICENSE
+CHANGELOG.md
+docs
+
+# Temporary files
+.DS_Store
+*.tmp
+*.temp
+.cache

@@ -21,7 +21,7 @@ const PORT = process.env.PORT!;
 const app = new Elysia()
   .use(cors())
   .use(swagger())
-  .get("/", () => "Hello Elysia ")
+  .get("/", () => `Hello Elysia: ${process.env.UPLOADTHING_TOKEN}`)
   .get("/ping", async () => {
     const data = await db.select().from(courses);
     return {

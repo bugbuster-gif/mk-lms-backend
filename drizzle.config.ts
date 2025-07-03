@@ -1,9 +1,10 @@
 import { defineConfig } from "drizzle-kit";
 import { config } from "dotenv";
+import logger from "./utils/logger";
 
-config({
-  path: "./.env.local",
-});
+config();
+
+logger.info("Database URL:", process.env.DATABASE_URL!);
 
 export default defineConfig({
   schema: "./db/schemas/*.ts",
